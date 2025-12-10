@@ -2,8 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const paymentRoutes = require('./routes/productRoutes.js');
 const path = require("path");
+const cors = require('cors');
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  })
+);
+
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));

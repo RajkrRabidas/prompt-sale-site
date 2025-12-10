@@ -33,6 +33,8 @@ const handlePaymentSuccess = async (req, res) => {
   try {
     const { paymentId, orderId, signature, email } = req.body;
 
+    console.log("handlePaymentSuccess called with:", req.body);
+
     if (!paymentId || !orderId || !signature || !email) {
       return res.status(400).json({ error: "Missing required fields" });
     }
