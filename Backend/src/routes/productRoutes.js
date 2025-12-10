@@ -1,10 +1,12 @@
 const express = require('express');
-const { createOder } = require('../controllers/productControllers.js');
+const { createOder, getKey, handlePaymentSuccess } = require('../controllers/productControllers.js');
 
 const router = express.Router();
 
 
 // Sample product route
-router.route("/payment/process").post(createOder);
+router.post("/payment/process", createOder);
+router.get("/payment/key", getKey);
+router.post("/payment-success", handlePaymentSuccess);
 
 module.exports = router;
