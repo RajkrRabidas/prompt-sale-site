@@ -2,15 +2,16 @@ const instance = require("../config/razorpayInstance.js");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const transporter = require("../config/nodemailer.js");
 const axios = require("axios");
 require("dotenv").config();
 
 // Load ENV values
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.FROM_EMAIL || "no-reply@yourdomain.com";
+const EMAIL_FROM = process.env.FROM_EMAIL || "das752101@gmail.com";
 
 // Absolute path of your PDF
-const PDF_PATH = path.join(__dirname, "../uploads/prompt-pack.pdf");
+// __dirname is Backend/src/controllers -> need to go up two levels to Backend/uploads
+const PDF_PATH = path.join(__dirname, "../../uploads/test.pdf");
 
 // Controller to handle Razorpay payment processing
 const createOder = async (req, res) => {
@@ -40,84 +41,78 @@ const getKey = (req, res) => {
 // Verify Razorpay signature + send email using Resend
 const handlePaymentSuccess = async (req, res) => {
   try {
-    const { paymentId, orderId, signature, email } = req.body;
-
-    console.log(email)
-
-    console.log("handlePaymentSuccess called with:", req.body);
+    console.log("/payment-success called with body:", req.body);
+    // Accept both Razorpay format + custom format
+    const paymentId =
+      req.body.paymentId || req.body.razorpay_payment_id;
+    const orderId =
+      req.body.orderId || req.body.razorpay_order_id;
+    const signature =
+      req.body.signature || req.body.razorpay_signature;
+    const email = req.body.email;
 
     if (!paymentId || !orderId || !signature || !email) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    // Verify signature
-    const body = orderId + "|" + paymentId;
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(body)
-      .digest("hex");
-
-    if (expectedSignature !== signature) {
+      console.error("Missing fields", { paymentId, orderId, signature, email });
       return res.status(400).json({
-        error: "Payment verification failed (invalid signature)",
+        error: "Missing required fields",
+        received: req.body,
       });
     }
 
-    // Check PDF exists
-    if (!fs.existsSync(PDF_PATH)) {
-      return res.status(500).json({ error: "PDF not found on server" });
+    // Verify signature (use the same secret name as razorpayInstance.js)
+    const body = `${orderId}|${paymentId}`;
+    const expectedSignature = crypto.createHmac("sha256", process.env.REZORPAY_API_SECRET).update(body).digest("hex");
+    console.log("Signature check", { body, expectedSignature, receivedSignature: signature });
+    if (expectedSignature !== signature) {
+      console.error("Signature mismatch", { expectedSignature, signature });
+      return res.status(400).json({
+        error: "Signature verification failed",
+      });
     }
 
-    // Read & convert PDF to base64
-    const pdfBuffer = fs.readFileSync(PDF_PATH);
-    const pdfBase64 = pdfBuffer.toString("base64");
+    // Check PDF file
+    if (!fs.existsSync(PDF_PATH)) {
+      return res.status(500).json({
+        error: "PDF not found on server",
+      });
+    }
 
-    // Send email through Resend REST API
-    const resp = await axios.post(
-      "https://api.resend.com/emails",
-      {
-        from: FROM_EMAIL,
-        to: email,
-        subject: "Your AI Prompt Pack — Thank you for your purchase",
+    // Read PDF buffer
+    const pdfBuffer = fs.readFileSync(PDF_PATH);
+
+    // Send email with PDF attachment
+    try {
+      const info = await transporter.sendMail({
+        from: EMAIL_FROM,
+        to: req.body.email,
+        subject: "Your AI Prompt Pack — Thanks for Purchase",
         html: `
-                <div style="font-family:system-ui, Arial; line-height:1.5;">
-                  <h2>Thanks for your purchase!</h2>
-                  <p>Your AI Prompt Pack is attached to this email.</p>
-                  <p>If you face any issue, reply to this email.</p>
-                </div>
-                `,
+          <h2>Thank you for purchasing!</h2>
+          <p>Your AI Prompt Pack PDF is attached.</p>
+        `,
         attachments: [
           {
-            filename: "AI-Prompt-Pack.pdf",
-            type: "application/pdf",
-            content: pdfBase64,
+            filename: "ai-prompt-pack.pdf",
+            content: pdfBuffer,
+            contentType: "application/pdf",
           },
         ],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+      });
+      console.log("Email sent", info && info.accepted ? info.accepted : info);
+    } catch (mailErr) {
+      console.error("Email send failed", mailErr);
+      return res.status(500).json({ error: "Email send failed", details: mailErr.message });
+    }
 
-    return res.json({
+    return res.status(200).json({
       success: true,
-      sent: true,
-      resendStatus: resp.status,
+      message: "Payment verified + email sent successfully",
     });
-
-
-
-  } catch (err) {
-    console.error(
-      "handlePaymentSuccess error:",
-      err.response ? err.response.data : err.message
-    );
+  } catch (error) {
+    console.error("handlePaymentSuccess error:", error);
     return res.status(500).json({
-      error: "Failed to process payment success",
-      details: err.message,
+      error: "Payment success handling failed",
+      details: error.message,
     });
   }
 };
