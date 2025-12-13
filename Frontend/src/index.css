@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+:root {
+    --color-primary: #4F46E5;  /* Indigo-600 */
+    --color-primary-hover: #4338CA;  
+    --color-heading: #111827;
+    --color-text: #4B5563;
+    --color-muted: #6b7280;
+    --card-bg: #f9fafb;
+    --bg: #ffffff;
+    --border: #e5e7eb;
+    --text-secondary: #6b7280;
+    --accent: #2563eb; /* Indigo = trust */
+    --accent-soft: #dbeafe;
+}

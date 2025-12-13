@@ -36,7 +36,7 @@ const ProductCard = ({ product = [] }) => {
       // 3️⃣ Razorpay Options
       const options = {
         key,
-        amount: amount * 100, 
+        amount: amount * 100,
         currency: "INR",
         name: "Your Store",
         description: "AI Prompt Pack Purchase",
