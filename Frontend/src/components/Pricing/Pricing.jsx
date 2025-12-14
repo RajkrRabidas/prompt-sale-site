@@ -30,7 +30,7 @@ const Pricing = () => {
                         <div className="flex items-baseline justify-center gap-1">
                             <span className="text-2xl font-semibold text-foreground">₹</span>
                             <span className="text-6xl md:text-7xl font-bold text-foreground tracking-tight">
-                                299
+                                199
                             </span>
                         </div>
                         <p className="text-muted-foreground mt-2">

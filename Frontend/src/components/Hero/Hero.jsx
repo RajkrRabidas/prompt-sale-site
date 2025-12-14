@@ -1,7 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 
-const Hero = () => {
+const Hero = ({ email, name, phone }) => {
+
+  const navigate = useNavigate();
+
+
   return (
     <section
       className="w-full bg-[var(--color-bg)]"
@@ -15,22 +20,33 @@ const Hero = () => {
           </span>
 
           <h1 className="text-4xl md:text-5xl font-bold leading-tight text-[var(--color-heading)]">
-            500+ Ready-to-Use AI Prompts to  
+            500+ Ready-to-Use AI Prompts to
             <span className="text-[var(--color-primary)]"> 10× Your Productivity</span>
           </h1>
 
           <p className="mt-6 text-lg text-[var(--color-text)] max-w-xl">
-            Stop wasting hours writing prompts.  
+            Stop wasting hours writing prompts.
             Get a curated PDF of proven prompts for ChatGPT, freelancing, coding, marketing & more.
           </p>
 
           {/* CTA BUTTONS */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <button
+              onClick={()=> navigate("/checkout")}
               className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-8 py-4 text-sm leading-relaxed rounded-xl font-semibold transition"
             >
               Get Instant Access In ₹199
             </button>
+
+            {/* <PaymentButton
+              amount={299}
+              userEmail={email}
+              userName={name}
+              userContact={phone}
+              label="Get Instant Access In ₹199"
+              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-8 py-4 text-sm leading-relaxed rounded-xl font-semibold transition"
+
+            /> */}
 
             <button
               className="border border-gray-300 text-[var(--color-heading)] px-8 py-4 text-sm leading-relaxed rounded-xl font-medium hover:bg-gray-50 transition"

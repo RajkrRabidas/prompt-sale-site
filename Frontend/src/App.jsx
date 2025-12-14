@@ -1,30 +1,16 @@
 import React from 'react'
-import ProductCard from './components/product/ProductCard';
-import data from './assets/data.js';
-import Hero from './components/Hero/Hero.jsx';
-import ProblemSolution from './components/ProblemSolution/ProblemSolution.jsx';
-import WhatYouGet from './components/WhatYouGet/WhatYouGet.jsx';
-import ProductPreview from './components/ProductPreview/ProductPreview.jsx';
-import Pricing from './components/Pricing/Pricing.jsx';
-import TrustSection from './components/TrustSection/TrustSection.jsx';
-import FAQSection from './components/FAQSection/FAQSection.jsx';
-import CTA from './components/CTA/CTA.jsx';
-import Footer from './components/Footer/Footer.jsx';
+import { Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import Checkout from './pages/Checkout'
+// import ThankYou from './pages/ThankYou'
 
 const App = () => {
   return (
-    <div>
-      {/* <ProductCard product={data} /> */}
-      <Hero />
-      <ProblemSolution />
-      <WhatYouGet />
-      <ProductPreview />
-      <Pricing />
-      <TrustSection />
-      <FAQSection />
-      <CTA />
-      <Footer />
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/checkout" element={<Checkout />} />
+      {/* <Route path="/thank-you" element={<ThankYou />} /> */}
+    </Routes>
   );
 }
 
