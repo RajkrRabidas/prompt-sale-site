@@ -1,7 +1,10 @@
 import React from 'react'
 import { Check, Zap, Shield, Clock } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
+    const navigate = useNavigate();
+    
     return (
         <section className="w-full py-16 md:py-24">
             <div className="container mx-auto px-4 max-w-lg">
@@ -61,7 +64,7 @@ const Pricing = () => {
                     </div>
 
                     {/* CTA Button */}
-                    <button className="w-full py-3 px-6 bg-[#111111] hover:bg-primary-hover text-[#ffffff] font-semibold rounded-[8px] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25">
+                    <button onClick={()=> navigate("/checkout")} className="w-full py-3 px-6 bg-[#111111] hover:bg-primary-hover text-[#ffffff] font-semibold rounded-[8px] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25">
                         Buy Now
                     </button>
 

@@ -1,11 +1,13 @@
 import React from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 const CTA = () => {
+  const navigate = useNavigate();
   return (
-    <section class="bg-white py-24">
-      <div class="max-w-4xl mx-auto px-6">
+    <section className="bg-white py-24">
+      <div className="max-w-4xl mx-auto px-6">
 
-        <div class="border border-gray-200 rounded-3xl p-12 text-center">
+        <div className="border border-gray-200 rounded-3xl p-12 text-center">
 
           {/* <!-- Heading --> */}
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -19,17 +21,11 @@ const CTA = () => {
 
           {/* <!-- CTA Button --> */}
           <button
+          onClick={()=> navigate("/checkout")}
             className="mt-10 px-10 py-4 bg-black text-white text-lg font-semibold rounded-xl hover:opacity-90 transition"
           >
             Buy Now – ₹299 (One-Time)
           </button>
-
-          {/* <PaymentButton
-            amount={299}
-            email={"email"}
-            label="Buy Now – ₹299 (One-Time)"
-
-          /> */}
 
           {/* <!-- Trust line --> */}
           <p className="mt-6 text-sm text-gray-500">

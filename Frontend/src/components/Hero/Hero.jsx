@@ -11,7 +11,7 @@ const Hero = ({ email, name, phone }) => {
     <section
       className="w-full bg-[var(--color-bg)]"
     >
-      <div className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
         {/* LEFT CONTENT */}
         <div>
@@ -38,16 +38,6 @@ const Hero = ({ email, name, phone }) => {
               Get Instant Access In ₹199
             </button>
 
-            {/* <PaymentButton
-              amount={299}
-              userEmail={email}
-              userName={name}
-              userContact={phone}
-              label="Get Instant Access In ₹199"
-              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-8 py-4 text-sm leading-relaxed rounded-xl font-semibold transition"
-
-            /> */}
-
             <button
               className="border border-gray-300 text-[var(--color-heading)] px-8 py-4 text-sm leading-relaxed rounded-xl font-medium hover:bg-gray-50 transition"
             >
@@ -65,7 +55,7 @@ const Hero = ({ email, name, phone }) => {
         <div className="relative">
           <div className="bg-indigo-50 rounded-2xl p-6 shadow-md">
             <img
-              src=""
+              src="https://www.laststandhats.com/cdn/shop/files/1740881953266.jpg?v=1741130609&width=720"
               alt="Prompt Pack Preview"
               className="rounded-xl"
             />

@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+import PackPreview from "../../assets/PackPreview.png";
+
 const ProductPreview = () => {
+    const navigate = useNavigate();
     return (
         <section className="py-20 bg-[var(--bg)]">
             <div className="max-w-6xl mx-auto px-6">
@@ -39,7 +43,7 @@ const ProductPreview = () => {
                     {/* Right: Image Preview */}
                     <div className="flex justify-center">
                         <img
-                            src="https://images.unsplash.com/photo-1581091870627-3d6c5f6d4f1b?q=80&w=800"
+                            src={PackPreview}
                             alt="Prompt Pack Preview"
                             className="rounded-xl shadow-lg border border-[var(--border)] max-w-full"
                         />
@@ -49,12 +53,12 @@ const ProductPreview = () => {
 
                 {/* CTA */}
                 <div className="text-center mt-14">
-                    <a
-                        href="#pricing"
+                    <button
+                        onClick={()=> navigate("/checkout")}
                         className="inline-flex items-center justify-center px-8 py-3 text-white bg-[var(--accent)] rounded-lg font-semibold hover:opacity-90 transition"
                     >
                         Get Instant Access
-                    </a>
+                    </button>
                 </div>
 
             </div>

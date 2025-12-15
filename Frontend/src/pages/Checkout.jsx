@@ -38,7 +38,7 @@ const Checkout = () => {
         />
 
         <PaymentButton
-          amount={299}
+          amount={199}
           userEmail={email}
           userName={name}
           userContact={phone}

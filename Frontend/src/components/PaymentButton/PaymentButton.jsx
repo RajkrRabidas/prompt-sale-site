@@ -1,6 +1,6 @@
 import axios from "axios";
-import successPage from "../../pages/SucessPage.jsx";
-import { redirect, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import Spinner from "../Loader/Spinner";
 
 const PaymentButton = ({
   amount,
@@ -11,7 +11,7 @@ const PaymentButton = ({
   className = "",
 }) => {
 
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const checkoutHandler = async () => {
     if (!userEmail) {
@@ -52,43 +52,65 @@ const PaymentButton = ({
         },
 
         handler: async (response) => {
-          const payload = {
-            paymentId: response.razorpay_payment_id,
-            orderId: response.razorpay_order_id,
-            signature: response.razorpay_signature,
-          };
+          setLoading(true); // Start loading state
+          try {
+            const payload = {
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+              email: userEmail,
+              name: userName,
+              contact: userContact,
+              amount,
+            };
 
-          const { data } = await axios.post(
-            "http://localhost:8000/api/v1/payment-success",
-            payload
-          );
+            const { data } = await axios.post(
+              "http://localhost:8000/api/v1/payment-success",
+              payload
+            );
 
-          if (data.success) {
-            navigate("/sucess");
-          } else {
-            alert("Payment done but processing failed.");
+            if (data.success) {
+              sessionStorage.setItem("payment_status", "success");
+              window.location.href = "/";
+            } else {
+              sessionStorage.setItem("payment_status", "failed");
+              window.location.href = "/";
+            }
+          } catch (error) {
+            console.error("Verification failed:", error);
+            sessionStorage.setItem("payment_status", "failed");
+            window.location.href = "/";
           }
         },
 
-        theme: {
-          color: "#ccc07a",
+          theme: {
+            color: "#ccc07a",
         },
-      };
+        };
 
-      new window.Razorpay(options).open();
-    } catch (err) {
-      console.error("Payment error:", err);
-      alert("Payment failed.");
-    }
+        new window.Razorpay(options).open();
+      } catch (err) {
+        console.error("Payment error:", err);
+        sessionStorage.setItem("payment_status", "failed");
+        window.location.href = "/";
+      }
+    };
+
+
+
+    return (
+      <>
+      {loading && <Spinner text="Verifying payment..." />}
+
+      <button
+        onClick={checkoutHandler}
+        disabled={loading}
+        className={`${className} ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+      >
+        {loading ? "Please wait..." : label}
+      </button>
+    </>
+    );
   };
 
-
-
-  return (
-    <button onClick={checkoutHandler} className={className}>
-      {label}
-    </button>
-  );
-};
-
-export default PaymentButton;
+  export default PaymentButton;
