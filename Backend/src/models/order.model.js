@@ -2,33 +2,52 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(
   {
-    email: {
+    razorpayOrderId: {
       type: String,
       required: true,
       index: true,
     },
-    razorpayOrderId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+
     razorpayPaymentId: {
       type: String,
       required: true,
       unique: true,
     },
+
+    razorpaySignature: {
+      type: String,
+      required: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+    },
+
     amount: {
       type: Number,
       required: true,
     },
+
     currency: {
       type: String,
       default: "INR",
     },
+
     status: {
       type: String,
-      enum: ["paid"],
-      default: "paid",
+      enum: [
+        "created",
+        "authorized",
+        "captured",
+        "failed",
+        "refunded",
+      ],
+      required: true,
+    },
+
+    method: {
+      type: String,
     },
   },
   { timestamps: true }

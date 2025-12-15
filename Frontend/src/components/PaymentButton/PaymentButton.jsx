@@ -1,4 +1,6 @@
 import axios from "axios";
+import successPage from "../../pages/SucessPage.jsx";
+import { redirect, useNavigate } from "react-router-dom";
 
 const PaymentButton = ({
   amount,
@@ -8,6 +10,9 @@ const PaymentButton = ({
   label = "Buy Now",
   className = "",
 }) => {
+
+  const navigate = useNavigate();
+
   const checkoutHandler = async () => {
     if (!userEmail) {
       alert("Email is required");
@@ -59,7 +64,7 @@ const PaymentButton = ({
           );
 
           if (data.success) {
-            alert("Payment successful! Check your email.");
+            navigate("/sucess");
           } else {
             alert("Payment done but processing failed.");
           }
@@ -76,6 +81,8 @@ const PaymentButton = ({
       alert("Payment failed.");
     }
   };
+
+
 
   return (
     <button onClick={checkoutHandler} className={className}>

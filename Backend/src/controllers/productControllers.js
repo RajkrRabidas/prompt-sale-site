@@ -45,95 +45,83 @@ const getKey = (req, res) => {
    PAYMENT SUCCESS
 ======================= */
 const handlePaymentSuccess = async (req, res) => {
-
-  console.log(req.body);
   try {
+    console.log("BODY:", req.body);
+
     const {
-      razorpay_payment_id,
-      razorpay_order_id,
-      razorpay_signature,
+      paymentId,
+      orderId,
+      signature,
     } = req.body;
 
-    console.log(req.body);
-
-    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
-      return res.status(400).json({ error: "Invalid payment data" });
+    if (!paymentId || !orderId || !signature) {
+      return res.status(400).json({ error: "Payment data missing" });
     }
 
-    /* 🔐 STEP 1: Verify Signature */
-    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const expectedSignature = crypto
+    /* 🔐 STEP 1: VERIFY SIGNATURE */
+    const sign = `${orderId}|${paymentId}`;
+    const expected = crypto
       .createHmac("sha256", process.env.REZORPAY_API_SECRET)
-      .update(body)
+      .update(sign)
       .digest("hex");
 
-    if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ error: "Signature verification failed" });
+    if (expected !== signature) {
+      return res.status(400).json({ error: "Signature mismatch" });
     }
 
-    /* 🔍 STEP 2: Fetch payment from Razorpay */
-    const payment = await instance.payments.fetch(razorpay_payment_id);
+    /* 🔍 STEP 2: FETCH PAYMENT FROM RAZORPAY (SOURCE OF TRUTH) */
+    const payment = await instance.payments.fetch(paymentId);
 
-    const email = payment.email;
-
-    if (!email) {
-      return res.status(400).json({ error: "Email not found in payment" });
+    if (!payment) {
+      return res.status(400).json({ error: "Payment not found" });
     }
 
-    /* 📄 STEP 3: Check PDF */
-    if (!fs.existsSync(PDF_PATH)) {
-      return res.status(500).json({ error: "PDF missing on server" });
-    }
-
-    const pdfBuffer = fs.readFileSync(PDF_PATH);
-
-    /* 💾 STEP 3.5: Save to MongoDB */
-    const alreadyExists = await orderModel.findOne({
-      razorpayPaymentId: razorpay_payment_id,
+    /* 💾 STEP 3: PREVENT DUPLICATES */
+    const exists = await orderModel.findOne({
+      razorpayPaymentId: paymentId,
     });
 
-    if (alreadyExists) {
-      return res.status(200).json({
-        success: true,
-        message: "Payment already processed",
+    if (exists) {
+      return res.status(200).json({ success: true, message: "Already processed" });
+    }
+
+    /* 💾 STEP 4: SAVE TO MONGODB */
+    const order = await orderModel.create({
+      razorpayOrderId: orderId,
+      razorpayPaymentId: paymentId,
+      razorpaySignature: signature,
+      email: payment.email || "not_provided@razorpay.com",
+      amount: payment.amount / 100,
+      currency: payment.currency,
+      status: payment.status,
+      method: payment.method,
+    });
+
+    console.log("SAVED:", order._id);
+
+    /* 📧 STEP 5: EMAIL */
+    if (fs.existsSync(PDF_PATH) && payment.email) {
+      await transporter.sendMail({
+        from: process.env.FROM_EMAIL,
+        to: payment.email,
+        subject: "Your AI Prompt Pack",
+        attachments: [
+          {
+            filename: "ai-prompt-pack.pdf",
+            path: PDF_PATH,
+          },
+        ],
       });
     }
 
-    await orderModel.create({
-      email,
-      razorpayOrderId: razorpay_order_id,
-      razorpayPaymentId: razorpay_payment_id,
-      amount: payment.amount / 100,
-      currency: payment.currency,
-    });
-
-
-    /* 📧 STEP 4: Send Email */
-    await transporter.sendMail({
-      from: EMAIL_FROM,
-      to: email,
-      subject: "Your AI Prompt Pack",
-      html: `
-        <h2>Payment Successful</h2>
-        <p>Your AI Prompt Pack PDF is attached.</p>
-      `,
-      attachments: [
-        {
-          filename: "ai-prompt-pack.pdf",
-          content: pdfBuffer,
-          contentType: "application/pdf",
-        },
-      ],
-    });
-
     return res.status(200).json({
       success: true,
-      message: "Payment verified & email sent",
+      message: "Payment saved + email sent",
     });
 
   } catch (err) {
-    console.error("Payment Success Error:", err);
-    res.status(500).json({ error: "Payment processing failed" });
+    console.error("PAYMENT ERROR:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
