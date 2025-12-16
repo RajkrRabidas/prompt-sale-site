@@ -62,7 +62,7 @@ const Orders = () => {
 
                             <tbody>
                                 {orders.map((order) => (
-                                    <tr key={order._id}>
+                                    <tr style={{textAlign:"center"}} key={order._id}>
                                         <td className="border p-2">{order.name}</td>
                                         <td className="border p-2">{order.email}</td>
                                         <td className="border p-2">{order.phone}</td>
@@ -72,10 +72,10 @@ const Orders = () => {
                                         <td className="border p-2">{order.method}</td>
                                         <td className="border p-2">
                                             <details>
-                                                <summary className="cursor-pointer text-blue-600 underline">View ID</summary>
-                                                <p className="mt-2">{order.razorpayOrderId}</p>
-                                                <p className="mt-2">{order.razorpayPaymentId}</p>
-                                                <p className="mt-2">{order.razorpaySignature}</p>
+                                                <summary className="cursor-pointer">View ID</summary>
+                                                <p className="mt-2">RezorpayOrderId - {order.razorpayOrderId}</p>
+                                                <p className="mt-2">RazorpayPaymentId - {order.razorpayPaymentId}</p>
+                                                <p className="mt-2">RazorpaySignature - {order.razorpaySignature}</p>
                                             </details>
                                         </td>
                                     </tr>

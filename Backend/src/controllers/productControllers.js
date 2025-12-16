@@ -52,7 +52,7 @@ const handlePaymentSuccess = async (req, res) => {
       paymentId,
       orderId,
       signature,
-      phone,
+      contact,
       name
     } = req.body;
 
@@ -97,7 +97,7 @@ const handlePaymentSuccess = async (req, res) => {
       currency: payment.currency,
       status: payment.status,
       method: payment.method,
-      phone: phone || "not_provided",
+      phone: contact || "not_provided",
       name: name || "not_provided",
     });
 

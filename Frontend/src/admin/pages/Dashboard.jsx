@@ -9,7 +9,6 @@ const AdminDashboard = () => {
       <Header />
       <div className="mt-6">
         <h2 className="text-lg font-medium">Dashboard Overview</h2>
-        {/* <Header /> */}
         <Sidebar />
       </div>
     </div>
