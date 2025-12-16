@@ -52,6 +52,8 @@ const handlePaymentSuccess = async (req, res) => {
       paymentId,
       orderId,
       signature,
+      phone,
+      name
     } = req.body;
 
     if (!paymentId || !orderId || !signature) {
@@ -95,6 +97,8 @@ const handlePaymentSuccess = async (req, res) => {
       currency: payment.currency,
       status: payment.status,
       method: payment.method,
+      phone: phone || "not_provided",
+      name: name || "not_provided",
     });
 
     console.log("SAVED:", order._id);
