@@ -1,28 +1,41 @@
 const instance = require("../config/razorpayInstance");
-const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const transporter = require("../config/nodemailer");
 const orderModel = require("../models/order.model");
+const verifiedPayment = require("../middlewares/verifyRazorpayPayment");
 require("dotenv").config();
 
 const EMAIL_FROM = process.env.FROM_EMAIL;
 const PDF_PATH = path.join(__dirname, "../../uploads/test.pdf");
+
+const PRODUCTS = {
+  PROMPT_PACK: {
+    amount: 1,
+    name: "AI Prompt Pack"
+  }
+};
+
 
 /* =======================
    CREATE ORDER
 ======================= */
 const createOrder = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { productKey } = req.body;
 
-    if (!amount) {
-      return res.status(400).json({ error: "Amount required" });
+    const product = PRODUCTS[productKey];
+    if (!product) {
+      return res.status(400).json({ error: "Invalid product" });
     }
 
     const order = await instance.orders.create({
-      amount: Number(amount) * 100,
+      amount: product.amount * 100,
       currency: "INR",
+      notes: {
+        productKey,
+        productName: product.name,
+      },
     });
 
     res.status(200).json({ success: true, order });
@@ -31,6 +44,7 @@ const createOrder = async (req, res) => {
     res.status(500).json({ error: "Order creation failed" });
   }
 };
+
 
 /* =======================
    GET KEY
@@ -44,55 +58,20 @@ const getKey = (req, res) => {
 /* =======================
    PAYMENT SUCCESS
 ======================= */
+
 const handlePaymentSuccess = async (req, res) => {
   try {
     console.log("BODY:", req.body);
 
-    const {
-      paymentId,
-      orderId,
-      signature,
-      contact,
-      name
-    } = req.body;
-
-    if (!paymentId || !orderId || !signature) {
-      return res.status(400).json({ error: "Payment data missing" });
-    }
-
-    /* 🔐 STEP 1: VERIFY SIGNATURE */
-    const sign = `${orderId}|${paymentId}`;
-    const expected = crypto
-      .createHmac("sha256", process.env.REZORPAY_API_SECRET)
-      .update(sign)
-      .digest("hex");
-
-    if (expected !== signature) {
-      return res.status(400).json({ error: "Signature mismatch" });
-    }
-
-    /* 🔍 STEP 2: FETCH PAYMENT FROM RAZORPAY (SOURCE OF TRUTH) */
-    const payment = await instance.payments.fetch(paymentId);
-
-    if (!payment) {
-      return res.status(400).json({ error: "Payment not found" });
-    }
-
-    /* 💾 STEP 3: PREVENT DUPLICATES */
-    const exists = await orderModel.findOne({
-      razorpayPaymentId: paymentId,
-    });
-
-    if (exists) {
-      return res.status(200).json({ success: true, message: "Already processed" });
-    }
+    const payment = req.verifiedPayment;
+    const { contact, name, signature, email } = req.body;
 
     /* 💾 STEP 4: SAVE TO MONGODB */
     const order = await orderModel.create({
-      razorpayOrderId: orderId,
-      razorpayPaymentId: paymentId,
-      razorpaySignature: signature,
-      email: payment.email || "not_provided@razorpay.com",
+      razorpayOrderId: payment.order_id,
+      razorpayPaymentId: payment.id,
+      razorpaySignature: signature || payment.signature,
+      email: email || payment.email || "not_provided@razorpay.com",
       amount: payment.amount / 100,
       currency: payment.currency,
       status: payment.status,
@@ -101,7 +80,7 @@ const handlePaymentSuccess = async (req, res) => {
       name: name || "not_provided",
     });
 
-    console.log("SAVED:", order._id);
+
 
     /* 📧 STEP 5: EMAIL */
     if (fs.existsSync(PDF_PATH) && payment.email) {

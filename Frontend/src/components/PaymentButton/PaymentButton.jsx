@@ -26,7 +26,7 @@ const PaymentButton = ({
 
       const { data: orderData } = await axios.post(
         "http://localhost:8000/api/v1/payment/process",
-        { amount }
+        { productKey: "PROMPT_PACK" }
       );
 
       const { key } = keyData;
