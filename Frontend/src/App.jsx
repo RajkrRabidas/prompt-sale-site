@@ -7,6 +7,7 @@ import AdminLogin from './admin/pages/Login.jsx'
 import ProtectedRoute from './routes/ProtectedRoute.jsx'
 import AdminDashboard from './admin/pages/Dashboard.jsx'
 import Orders from './admin/pages/Orders.jsx'
+import SuccessPage from './pages/SucessPage.jsx'
 
 const App = () => {
   return (
@@ -14,7 +15,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/sucess" element={<successPage />} />
+        <Route path="/payment/webhook" element={<SuccessPage />} />
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route

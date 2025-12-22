@@ -18,7 +18,7 @@ const Home = () => {
     if (!status) return;
 
     if (status === "success") {
-      toast.success("Payment successful! Check your Email🎉");
+      toast.success("Email will be delivered shortly");
     }
 
     if (status === "failed") {
@@ -36,7 +36,7 @@ const Home = () => {
         toastOptions={{
           duration: 4000,
           style: {
-            fontSize: "14px",
+            fontSize: "16px",
           },
         }}
       />

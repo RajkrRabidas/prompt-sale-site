@@ -3,14 +3,12 @@ import { useState } from "react";
 import Spinner from "../Loader/Spinner";
 
 const PaymentButton = ({
-  amount,
   userEmail,
   userName,
   userContact,
   label = "Buy Now",
   className = "",
 }) => {
-
   const [loading, setLoading] = useState(false);
 
   const checkoutHandler = async () => {
@@ -19,31 +17,31 @@ const PaymentButton = ({
       return;
     }
 
+    console.log(window.Razorpay);
+
+
     try {
+      setLoading(true);
+
+      // 1️⃣ Get Razorpay Key
       const { data: keyData } = await axios.get(
         "http://localhost:8000/api/v1/payment/key"
       );
 
+      // 2️⃣ Create Order (AMOUNT DECIDED BY SERVER)
       const { data: orderData } = await axios.post(
         "http://localhost:8000/api/v1/payment/process",
-        { productKey: "PROMPT_PACK" }
+        {
+          productKey: "PROMPT_PACK",
+        }
       );
 
-      const { key } = keyData;
-      const { order } = orderData;
-
-      if (!window.Razorpay) {
-        alert("Razorpay SDK failed to load.");
-        return;
-      }
-
       const options = {
-        key,
-        amount: Number(amount) * 100,
+        key: keyData.key,
+        order_id: orderData.order.id,
         currency: "INR",
         name: "AI Prompt Pack",
         description: "One-time purchase",
-        order_id: order.id,
 
         prefill: {
           email: userEmail,
@@ -51,66 +49,39 @@ const PaymentButton = ({
           contact: userContact || "",
         },
 
-        handler: async (response) => {
-          setLoading(true); // Start loading state
-          try {
-            const payload = {
-              paymentId: response.razorpay_payment_id,
-              orderId: response.razorpay_order_id,
-              signature: response.razorpay_signature,
-              email: userEmail,
-              name: userName,
-              contact: userContact,
-              amount,
-            };
-
-            const { data } = await axios.post(
-              "http://localhost:8000/api/v1/payment-success",
-              payload
-            );
-
-            if (data.success) {
-              sessionStorage.setItem("payment_status", "success");
-              window.location.href = "/";
-            } else {
-              sessionStorage.setItem("payment_status", "failed");
-              window.location.href = "/";
-            }
-          } catch (error) {
-            console.error("Verification failed:", error);
-            sessionStorage.setItem("payment_status", "failed");
-            window.location.href = "/";
-          }
+        handler: function () {
+          window.location.href = "/payment/webhook";
         },
 
-          theme: {
-            color: "#ccc07a",
+        theme: {
+          color: "#ccc07a",
         },
-        };
+      };
 
-        new window.Razorpay(options).open();
-      } catch (err) {
-        console.error("Payment error:", err);
-        sessionStorage.setItem("payment_status", "failed");
-        window.location.href = "/";
-      }
-    };
+      new window.Razorpay(options).open();
+    } catch (err) {
+      console.error(err);
+      alert("Payment failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-
-    return (
-      <>
-      {loading && <Spinner text="Verifying payment..." />}
+  return (
+    <>
+      {loading && <Spinner text="Redirecting to payment..." />}
 
       <button
         onClick={checkoutHandler}
         disabled={loading}
-        className={`${className} ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+        className={`${className} ${
+          loading ? "opacity-60 cursor-not-allowed" : ""
+        }`}
       >
         {loading ? "Please wait..." : label}
       </button>
     </>
-    );
-  };
+  );
+};
 
-  export default PaymentButton;
+export default PaymentButton;
