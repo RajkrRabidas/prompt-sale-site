@@ -27,7 +27,7 @@ const WhatYouGet = () => {
   ];
 
   return (
-    <section className="py-20 bg-[var(--bg)]">
+    <section className="py-20 bg-[var(--bg)]" id="what_you_get">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Heading */}

@@ -53,12 +53,12 @@ const ProblemSolution = () => {
                         <li>✅ Beginner-friendly — no AI expertise needed</li>
                     </ul>
 
-                    <button
+                    <a href='#product-preview'
                         className="mt-6 inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold transition
-                       bg-[var(--primary)] text-white hover:opacity-90"
+                       bg-[var(--color-primary)] text-white hover:opacity-90 cursor-pointer"
                     >
                         See What’s Inside →
-                    </button>
+                    </a>
                 </div>
             </div>
         </section>

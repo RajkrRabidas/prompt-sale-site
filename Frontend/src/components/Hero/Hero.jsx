@@ -2,10 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 
-const Hero = ({ email, name, phone }) => {
+const Hero = () => {
 
   const navigate = useNavigate();
-
 
   return (
     <section
@@ -32,17 +31,14 @@ const Hero = ({ email, name, phone }) => {
           {/* CTA BUTTONS */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <button
-              onClick={()=> navigate("/checkout")}
-              className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-8 py-4 text-sm leading-relaxed rounded-xl font-semibold transition"
+              onClick={() => navigate("/checkout")}
+              className="bg-[var(--color-primary)] cursor-pointer hover:bg-[var(--color-primary-hover)] text-white px-8 py-4 text-sm leading-relaxed rounded-xl font-semibold transition"
             >
               Get Instant Access In ₹199
             </button>
 
-            <button
-              className="border border-gray-300 text-[var(--color-heading)] px-8 py-4 text-sm leading-relaxed rounded-xl font-medium hover:bg-gray-50 transition"
-            >
-              See What’s Inside
-            </button>
+            <a href="#what_you_get" className="border border-gray-300 cursor-pointer text-[var(--color-heading)] px-8 py-4 text-sm leading-relaxed rounded-xl font-medium hover:bg-gray-50 transition"
+            >See What’s Inside</a>
           </div>
 
           {/* TRUST LINE */}

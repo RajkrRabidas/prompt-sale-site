@@ -13,3 +13,7 @@
     --accent: #2563eb; /* Indigo = trust */
     --accent-soft: #dbeafe;
 }
+
+html, body{
+    scroll-behavior: smooth;
+}

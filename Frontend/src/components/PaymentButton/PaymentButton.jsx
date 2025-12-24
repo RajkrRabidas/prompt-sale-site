@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
 import Spinner from "../Loader/Spinner";
+import { useNavigate } from "react-router-dom";
+import { handleApiError } from "../../../utils/handleApiError";
 
 const PaymentButton = ({
   userEmail,
@@ -9,6 +11,7 @@ const PaymentButton = ({
   label = "Buy Now",
   className = "",
 }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const checkoutHandler = async () => {
@@ -49,8 +52,8 @@ const PaymentButton = ({
           contact: userContact || "",
         },
 
-        handler: function () {
-          window.location.href = "/payment/webhook";
+        handler: function (response) {
+          navigate(`/payment/webhook?orderId=${response.razorpay_order_id}`);
         },
 
         theme: {
@@ -60,8 +63,7 @@ const PaymentButton = ({
 
       new window.Razorpay(options).open();
     } catch (err) {
-      console.error(err);
-      alert("Payment failed");
+      handleApiError(err, navigate);
     } finally {
       setLoading(false);
     }

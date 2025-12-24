@@ -22,7 +22,7 @@ const CTA = () => {
           {/* <!-- CTA Button --> */}
           <button
           onClick={()=> navigate("/checkout")}
-            className="mt-10 px-10 py-4 bg-black text-white text-lg font-semibold rounded-xl hover:opacity-90 transition"
+            className="mt-10 px-10 py-4 bg-black text-white text-lg cursor-pointer font-semibold rounded-xl hover:opacity-90 transition"
           >
             Buy Now – ₹299 (One-Time)
           </button>

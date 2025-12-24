@@ -10,7 +10,7 @@ const router = express.Router();
 router.post("/payment/process", createOrder);
 router.get("/payment/key", getKey);
 
-router.get("/payment/status/:orderId", paymentStatus);
+router.get("/payment/status/:order_id", paymentStatus);
 
 
 

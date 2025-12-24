@@ -64,7 +64,7 @@ const Pricing = () => {
                     </div>
 
                     {/* CTA Button */}
-                    <button onClick={()=> navigate("/checkout")} className="w-full py-3 px-6 bg-[#111111] hover:bg-primary-hover text-[#ffffff] font-semibold rounded-[8px] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25">
+                    <button onClick={()=> navigate("/checkout")} className="w-full py-3 px-6 bg-[#111111] hover:bg-primary-hover text-[#ffffff] font-semibold rounded-[8px] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25 cursor-pointer">
                         Buy Now
                     </button>
 

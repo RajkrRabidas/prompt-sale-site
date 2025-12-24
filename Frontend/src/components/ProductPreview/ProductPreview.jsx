@@ -4,7 +4,7 @@ import PackPreview from "../../assets/PackPreview.png";
 const ProductPreview = () => {
     const navigate = useNavigate();
     return (
-        <section className="py-20 bg-[var(--bg)]">
+        <section className="py-20 bg-[var(--bg)]" id="product-preview">
             <div className="max-w-6xl mx-auto px-6">
 
                 {/* Heading */}
@@ -55,7 +55,7 @@ const ProductPreview = () => {
                 <div className="text-center mt-14">
                     <button
                         onClick={()=> navigate("/checkout")}
-                        className="inline-flex items-center justify-center px-8 py-3 text-white bg-[var(--accent)] rounded-lg font-semibold hover:opacity-90 transition"
+                        className="inline-flex items-center justify-center cursor-pointer px-8 py-3 text-white bg-[var(--accent)] rounded-lg font-semibold hover:opacity-90 transition"
                     >
                         Get Instant Access
                     </button>

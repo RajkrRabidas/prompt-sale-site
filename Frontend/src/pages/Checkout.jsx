@@ -5,8 +5,6 @@ const Checkout = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
-  const isEmailValid = re.test(email);
 
   return (
     <div className="min-h-screen">
@@ -18,7 +16,7 @@ const Checkout = () => {
               <div className="w-10 h-10 bg-blue-500 rounded flex items-center justify-center text-white font-semibold">U</div>
               <div>
                 <h2 className="text-2xl font-semibold">Welcome to AIPP</h2>
-                <p className="text-sm text-gray-500">Fill this form to receive a prompt in your email</p>
+                <p className="text-sm text-gray-500">Fill this form to receive a prompts in your email</p>
               </div>
             </div>
 
@@ -58,7 +56,7 @@ const Checkout = () => {
                 userEmail={email}
                 userName={name}
                 userContact={phone}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:opacity-95"
+                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:opacity-95 cursor-pointer"
               />
             </div>
           </div>
