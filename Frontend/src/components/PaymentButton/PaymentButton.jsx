@@ -2,39 +2,41 @@ import axios from "axios";
 import { useState } from "react";
 import Spinner from "../Loader/Spinner";
 import { useNavigate } from "react-router-dom";
-import { handleApiError } from "../../../utils/handleApiError";
 
 const PaymentButton = ({
   userEmail,
   userName,
   userContact,
+  onError = () => {},
   label = "Buy Now",
   className = "",
 }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  console.log(userContact)
+
   const checkoutHandler = async () => {
     if (!userEmail) {
-      alert("Email is required");
+      onError({ email: "Email is required" });
       return;
     }
-
-    console.log(window.Razorpay);
-
 
     try {
       setLoading(true);
 
-      // 1️⃣ Get Razorpay Key
+      // 1️⃣ Get Razorpay public key
       const { data: keyData } = await axios.get(
         "http://localhost:8000/api/v1/payment/key"
       );
 
-      // 2️⃣ Create Order (AMOUNT DECIDED BY SERVER)
+      // 2️⃣ Create order (SERVER decides amount)
       const { data: orderData } = await axios.post(
         "http://localhost:8000/api/v1/payment/process",
         {
+          email: userEmail,
+          name: userName,
+          contact: userContact || "",
           productKey: "PROMPT_PACK",
         }
       );
@@ -53,7 +55,14 @@ const PaymentButton = ({
         },
 
         handler: function (response) {
+          // ✅ FRONTEND SUCCESS PAGE
           navigate(`/payment/webhook?orderId=${response.razorpay_order_id}`);
+        },
+
+        modal: {
+          ondismiss: () => {
+            onError({ form: "Payment cancelled by user" });
+          },
         },
 
         theme: {
@@ -61,9 +70,20 @@ const PaymentButton = ({
         },
       };
 
-      new window.Razorpay(options).open();
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
     } catch (err) {
-      handleApiError(err, navigate);
+      const res = err.response?.data;
+
+      if (res?.code === "VALIDATION_ERROR") {
+        onError(res.errors); // field-wise errors
+        return;
+      }
+
+      onError({
+        form: res?.message || "Unable to start payment. Try again.",
+      });
     } finally {
       setLoading(false);
     }

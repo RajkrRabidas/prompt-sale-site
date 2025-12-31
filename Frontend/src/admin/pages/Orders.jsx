@@ -65,7 +65,7 @@ const Orders = () => {
                                     <tr style={{textAlign:"center"}} key={order._id}>
                                         <td className="border p-2">{order.name}</td>
                                         <td className="border p-2">{order.email}</td>
-                                        <td className="border p-2">{order.phone}</td>
+                                        <td className="border p-2">{order.contact}</td>
                                         <td className="border p-2">₹{order.amount}</td>
                                         <td className="border p-2">{order.currency}</td>
                                         <td className="border p-2">{order.status}</td>

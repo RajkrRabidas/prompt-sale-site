@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const transporter = require("../config/nodemailer");
 const orderModel = require("../models/order.model");
+const checkoutSchema = require("../validator/checkout.schema");
 const verifiedPayment = require("../middlewares/verifyRazorpayPayment");
 
 const EMAIL_FROM = process.env.FROM_EMAIL;
@@ -22,7 +23,23 @@ const PRODUCTS = {
 ======================= */
 const createOrder = async (req, res) => {
   try {
-    const { productKey } = req.body;
+    console.log("CREATE ORDER BODY:", req.body);
+
+    const parsed = checkoutSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      const errors = {};
+      parsed.error.issues.forEach((i) => {
+        errors[i.path[0]] = i.message;
+      });
+
+      return res.status(400).json({
+        success: false,
+        code: "VALIDATION_ERROR",
+        errors,
+      });
+    }
+    const { productKey } = parsed.data;
 
     const product = PRODUCTS[productKey];
     if (!product) {
@@ -44,11 +61,11 @@ const createOrder = async (req, res) => {
 
     res.status(200).json({ success: true, order });
   } catch (err) {
-    console.error("Create Order Error:", err);
+    console.error(err);
     res.status(500).json({
       success: false,
       code: "ORDER_CREATE_FAILED",
-      message: "Unable to create order. Please try again.",
+      message: "Unable to create order",
     });
   }
 };
@@ -70,6 +87,7 @@ const razorpayWebhookHandler = async (req, res) => {
   try {
 
     const { name } = req.body;
+    console.log(name)
 
     const signature = req.headers["x-razorpay-signature"];
 
@@ -113,7 +131,7 @@ const razorpayWebhookHandler = async (req, res) => {
       return res.status(200).json({ success: true });
     }
 
-    await orderModel.create({
+    const order = await orderModel.create({
       razorpayPaymentId: payment.id,
       razorpayOrderId: payment.order_id,
       amount: payment.amount / 100,
@@ -122,9 +140,11 @@ const razorpayWebhookHandler = async (req, res) => {
       method: payment.method,
       status: payment.status,
       razorpaySignature: signature,
-      name: payment.notes?.name || payment.name || req.body.name || "",
-      phone: payment.contact || "",
+      name: req.body.name || "",
+      contact: payment.contact,
     });
+
+    console.log("seved order", order)
 
     // Send email with PDF attachment
 

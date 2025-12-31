@@ -2,73 +2,155 @@ import { useState } from "react";
 import PaymentButton from "../components/PaymentButton/PaymentButton";
 
 const Checkout = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [form, setForm] = useState({
+    email: "",
+    name: "",
+    contact: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: null, form: null });
+  };
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto min-h-screen grid grid-cols-1 md:grid-cols-2">
-        {/* Left panel - form */}
-        <div className="bg-white flex items-center justify-center px-8 md:px-16">
-          <div className="w-full max-w-md py-12">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-blue-500 rounded flex items-center justify-center text-white font-semibold">U</div>
-              <div>
-                <h2 className="text-2xl font-semibold">Welcome to AIPP</h2>
-                <p className="text-sm text-gray-500">Fill this form to receive a prompts in your email</p>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-            <label className="text-sm text-gray-500">Email*</label>
-            <input
-              type="email"
-              placeholder="Email address"
-              required={true}
-              className="w-full border rounded-lg px-4 py-3 mt-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+        {/* LEFT — PRODUCT DETAILS */}
+        <div>
+          <img
+            src="/logo.png"
+            alt="AI Growth School"
+            className="h-8 mb-6"
+          />
 
-            <label className="text-xs text-gray-500">Full name*</label>
-            <input
-              type="text"
-              placeholder="Full name"
-              required={true}
-              className="w-full border rounded-lg px-4 py-3 mt-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+            500+ Professional Prompts Library
+          </h1>
 
-            <label className="text-xs text-gray-500">Phone*</label>
-            <input
-              type="tel"
-              placeholder="Phone number"
-              required={true}
-              className="w-full border rounded-lg px-4 py-3 mt-2 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+          <p className="text-sm text-gray-500 mb-4">
+           brand name
+          </p>
 
-            <div className="mb-4">
-              <PaymentButton
-                amount={199}
-                userEmail={email}
-                userName={name}
-                userContact={phone}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:opacity-95 cursor-pointer"
-              />
-            </div>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="line-through text-gray-400">₹999</span>
+            <span className="text-3xl font-bold text-gray-900">₹199</span>
           </div>
+
+          <img
+            src="https://www.laststandhats.com/cdn/shop/files/1740881953266.jpg?v=1741130609&width=720"
+            alt="Prompt Pack"
+            className="rounded-lg mb-6"
+          />
+
+          <p className="text-gray-700 leading-relaxed">
+            500+ ready-to-use prompts across <strong>fashion, beauty, health,
+            food, home, and tech</strong> — engineered to deliver e-commerce
+            ready visuals in seconds.
+            <br /><br />
+            No models. No studio. No waiting.
+          </p>
+
+          <p className="text-xs text-gray-400 mt-6">
+            You agree to share information entered on this page with Razorpay,
+            adhering to applicable laws.
+          </p>
         </div>
 
-        {/* Right panel - illustration */}
-        <div className="hidden md:flex items-center justify-center p-8">
-          <div className="max-w-lg text-white text-center">
-            <img src="https://www.laststandhats.com/cdn/shop/files/1740881953266.jpg?v=1741130609&width=720" alt="" />
-            <h3 className="mt-6 text-2xl font-semibold">Secure payments, instant access</h3>
-            <p className="mt-2 text-white/80">Complete your purchase quickly and securely with our integrated checkout.</p>
+        {/* RIGHT — PAYMENT FORM */}
+        <div className="bg-white rounded-xl p-8 h-fit">
+
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Payment details
+          </h2>
+
+          <p className="text-sm text-gray-500 mb-6">
+            Complete your purchase by providing your payment details.
+          </p>
+
+          {/* Billing Info */}
+          <div className="border rounded-lg p-4 mb-6">
+            <p className="text-sm font-medium text-gray-700 mb-4">
+              Billing information
+            </p>
+
+            {/* Name */}
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Name"
+              className="w-full border rounded-md px-4 py-3 mb-2 outline-0"
+            />
+            {errors.name && (
+              <p className="text-sm text-red-500 mb-2">{errors.name}</p>
+            )}
+
+            {/* Email */}
+            <input
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Email"
+              className="w-full border rounded-md px-4 py-3 mb-2 outline-0"
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500 mb-2">{errors.email}</p>
+            )}
+
+            {/* Phone */}
+            <input
+              name="contact"
+              value={form.contact}
+              onChange={handleChange}
+              placeholder="Phone"
+              className="w-full border rounded-md px-4 py-3 outline-0"
+            />
+            {errors.contact && (
+              <p className="text-sm text-red-500 mt-1">{errors.contact}</p>
+            )}
           </div>
+
+          {/* Coupon */}
+          <div className="border rounded-lg px-4 py-3 mb-6 flex items-center justify-between cursor-pointer">
+            <input type="text" className="text-sm text-gray-600 w-full h-full border-0 outline-0" placeholder="Have a coupon?"/>
+            <span className="text-xl">+</span>
+          </div>
+
+          {/* Exclusive Offer */}
+          <div className="bg-lime-100 border border-lime-300 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <input type="checkbox" defaultChecked />
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  Course Access – How to Make Money with AI Images
+                </p>
+                <p className="text-sm text-gray-600">
+                  Get access to our webinar recording.
+                </p>
+              </div>
+              <span className="ml-auto font-semibold">₹199</span>
+            </div>
+          </div>
+
+          {/* FORM ERROR */}
+          {errors.form && (
+            <div className="text-red-600 text-sm mb-4">{errors.form}</div>
+          )}
+
+          {/* PAY BUTTON */}
+          <PaymentButton
+            userEmail={form.email}
+            userName={form.name}
+            userContact={form.contact}
+            payload={form}
+            onError={setErrors}
+            label="Proceed to pay ₹199.00"
+            className="w-full bg-[#0E3277] text-white py-3 rounded-lg font-medium hover:opacity-90 cursor-pointer"
+          />
         </div>
       </div>
     </div>
