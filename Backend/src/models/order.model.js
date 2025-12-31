@@ -51,7 +51,9 @@ const orderSchema = new mongoose.Schema(
       ],
       required: true,
     },
-
+    sessionId: {
+      type : String
+    },
     method: {
       type: String,
     },

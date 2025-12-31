@@ -13,10 +13,9 @@ const PDF_PATH = path.join(__dirname, "../../uploads/test.pdf");
 const PRODUCTS = {
   PROMPT_PACK: {
     amount: 1,
-    name: "AI Prompt Pack"
-  }
+    name: "AI Prompt Pack",
+  },
 };
-
 
 /* =======================
    CREATE ORDER
@@ -47,7 +46,7 @@ const createOrder = async (req, res) => {
         success: false,
         code: "INVALID_PRODUCT",
         message: "Selected product is not available",
-      })
+      });
     }
 
     const order = await instance.orders.create({
@@ -70,7 +69,6 @@ const createOrder = async (req, res) => {
   }
 };
 
-
 /* =======================
    GET KEY
 ======================= */
@@ -85,15 +83,16 @@ const getKey = (req, res) => {
 ======================= */
 const razorpayWebhookHandler = async (req, res) => {
   try {
-
     const { name } = req.body;
-    console.log(name)
+    console.log(name);
 
     const signature = req.headers["x-razorpay-signature"];
 
-    const raw = req.rawBody || (req.body && typeof req.body === "object"
-      ? Buffer.from(JSON.stringify(req.body))
-      : req.body);
+    const raw =
+      req.rawBody ||
+      (req.body && typeof req.body === "object"
+        ? Buffer.from(JSON.stringify(req.body))
+        : req.body);
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.REZORPAY_API_SECRET)
@@ -144,7 +143,7 @@ const razorpayWebhookHandler = async (req, res) => {
       contact: payment.contact,
     });
 
-    console.log("seved order", order)
+    console.log("seved order", order);
 
     // Send email with PDF attachment
 
@@ -184,7 +183,6 @@ const razorpayWebhookHandler = async (req, res) => {
       success: true,
       message: "Payment verified & email sent",
     });
-
   } catch (err) {
     console.error("Webhook Error:", err);
     return res.status(500).json({ success: false });
@@ -195,23 +193,27 @@ const razorpayWebhookHandler = async (req, res) => {
    PAYMENT STATUS
 ======================= */
 
-
 const paymentStatus = async (req, res) => {
   try {
-    const order_id = req.params.order_id || req.params.orderId || req.query.orderId;
+    const orderId =
+      req.params.order_id ||
+      req.params.orderId ||
+      req.query.orderId;
 
-    if (!order_id) {
-      return res.status(400).json({ success: false, message: "Order ID required" });
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        message: "Order ID required",
+      });
     }
 
     const order = await orderModel.findOne({
-      razorpayOrderId: order_id,
+      razorpayOrderId: orderId,
     });
 
     if (!order) {
       return res.status(200).json({
         success: true,
-        paid: false,
         status: "PENDING",
       });
     }
@@ -219,16 +221,29 @@ const paymentStatus = async (req, res) => {
     if (order.status === "captured") {
       return res.status(200).json({
         success: true,
-        paid: true,
         status: "SUCCESS",
-        paymentId: order.razorpayPaymentId,
+        data: {
+          orderId: order.razorpayOrderId,
+          paymentId: order.razorpayPaymentId,
+          amount: order.amount,
+          method: order.method,
+          stationName: order.stationName,
+          sessionId: order.sessionId,
+          createdAt: order.createdAt,
+        },
+      });
+    }
+
+    if (order.status === "failed") {
+      return res.status(200).json({
+        success: true,
+        status: "FAILED",
       });
     }
 
     return res.status(200).json({
       success: true,
-      paid: false,
-      status: order.status,
+      status: "PENDING",
     });
 
   } catch (error) {
@@ -239,7 +254,6 @@ const paymentStatus = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   createOrder,
