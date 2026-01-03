@@ -126,13 +126,3 @@ Raj Das
 Full-Stack Web Developer
 
 ---
-
-### Straight truth
-- This README is **interview-safe**.
-- Recruiters will immediately understand the architecture.
-- Don’t over-decorate it — clarity > cosmetics.
-
-Next logical steps (pick one):
-1️⃣ GitHub repo description + tags  
-2️⃣ ATS-optimized resume bullets  
-3️⃣ 2-minute interview explanation script
